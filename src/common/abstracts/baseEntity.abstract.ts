@@ -2,7 +2,7 @@ import { BeforeInsert, BeforeUpdate, Column, PrimaryGeneratedColumn } from "type
 
 export abstract class BaseEntity {
     @PrimaryGeneratedColumn('increment')
-    id: string
+    id: number
 
     @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMPS" })
     createdAt: Date

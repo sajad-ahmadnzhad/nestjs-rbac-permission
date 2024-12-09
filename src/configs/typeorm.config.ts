@@ -17,6 +17,6 @@ export default (): TypeOrmModuleOptions => {
         username: DB_USERNAME,
         password: DB_PASSWORD,
         synchronize: !!Number.parseInt(DB_SYNCHRONIZE),
-        autoLoadEntities: true,
+        autoLoadEntities: true
     }
 }

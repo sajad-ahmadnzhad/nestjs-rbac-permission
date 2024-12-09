@@ -1,16 +1,19 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './entities/role.entity';
 import { Repository } from 'typeorm';
 import { Permission } from './entities/permission.entity';
+import { User } from '../auth/entities/user.entity';
+import { UserRole } from './entities/userRoles.entity';
 
 @Injectable()
 export class RolesService {
   constructor(
     @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
-    @InjectRepository(Permission) private readonly permissionRepository: Repository<Permission>
+    @InjectRepository(Permission) private readonly permissionRepository: Repository<Permission>,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(UserRole) private readonly userRoleRepository: Repository<UserRole>
   ) { }
 
   async create(createRoleDto: CreateRoleDto) {
@@ -40,8 +43,8 @@ export class RolesService {
   }
 
 
-  async findOneAndThrow(name: string): Promise<Role> {
-    const existingRole = await this.roleRepository.findOneBy({ name })
+  async findOneAndThrow(id: number): Promise<Role> {
+    const existingRole = await this.roleRepository.findOneBy({ id })
 
     if (!existingRole) {
       throw new NotFoundException("Role not found")
@@ -50,4 +53,12 @@ export class RolesService {
     return existingRole
   }
 
+  async assignRoleToUser(body: any) {
+    const { roleId, userId } = body
+    const userRole = this.userRoleRepository.create({
+      user: { id: userId },
+      role: { id: roleId },
+    })
+    await this.userRoleRepository.save(userRole)
+  }
 }

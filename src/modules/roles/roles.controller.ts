@@ -1,34 +1,37 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Put, UseGuards } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
+import { PermissionsGuard } from '../../common/guards/permission.guard';
+import { Permissions } from '../../common/decorators/permission.decorator';
+import { Action } from '../../common/enums/action.enum';
+import { Resource } from '../../common/enums/resource.enum';
 
 @Controller('roles')
+@UseGuards(PermissionsGuard)
 export class RolesController {
-  constructor(private readonly rolesService: RolesService) {}
+  constructor(private readonly rolesService: RolesService) { }
 
   @Post()
   create(@Body() createRoleDto: CreateRoleDto) {
     return this.rolesService.create(createRoleDto);
   }
 
-  @Get()
-  findAll() {
-    return this.rolesService.findAll();
+  @Post('test-access')
+  @Permissions(Action.DELETE, Resource.USERS)
+  testAccess() {
+    return 'your is access'
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.rolesService.findOne(+id);
+  @Put('test-access-2')
+  @Permissions(Action.UPDATE, Resource.POSTERS)
+  testAccess2() {
+    return 'your is access 2'
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-    return this.rolesService.update(+id, updateRoleDto);
+  @Put('assign-role')
+  async assignRole(@Body() body: any) {
+    await this.rolesService.assignRoleToUser(body)
+    return "success"
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.rolesService.remove(+id);
-  }
 }

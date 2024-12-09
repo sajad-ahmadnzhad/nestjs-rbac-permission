@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import typeormConfig from '../../configs/typeorm.config';
 import { ConfigModule } from '@nestjs/config';
 import { APP_PIPE } from '@nestjs/core';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
@@ -11,7 +12,8 @@ import { APP_PIPE } from '@nestjs/core';
       envFilePath: process.cwd() + '/.env'
     }),
     TypeOrmModule.forRoot(typeormConfig()),
-    RolesModule
+    RolesModule,
+    AuthModule
   ],
   controllers: [],
   providers: [
